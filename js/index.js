@@ -3,7 +3,7 @@ width = window.innerWidth / 16;
 height = window.innerHeight / 16;
 var addMov = .033;
 
-var div = document.querySelector("#jogo");
+var div = document.querySelector("#game");
 var infoDiv = document.querySelector("#info");
 var pauseDiv = document.querySelector("#pause");
 var scene = new THREE.Scene();
