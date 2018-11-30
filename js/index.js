@@ -1,4 +1,3 @@
-//Preparando uso do THREE
 width = window.innerWidth / 16;
 height = window.innerHeight / 16;
 
@@ -7,15 +6,13 @@ var infoDiv = document.querySelector("#info");
 var pauseDiv = document.querySelector("#pause");
 var scene = new THREE.Scene();
 
-//Camera 1
+//Camera
 var camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 8.5, -7);
 var a = new THREE.Vector3(0, 0, 0)
-//var b = new THREE.Vector3(0, 0, 1);
 camera.lookAt(a);
 var addMov = .033;
 
-//render
 var renderer = new THREE.WebGLRenderer({
 	alpha: true,
 	antialias: false //false deixa mais rapido
@@ -37,7 +34,6 @@ function onWindowResize() {
 	camera.bottom = -height;
 	camera.updateProjectionMatrix();
 }
-
 
 //Luzes
 var changeLight = false;
@@ -61,34 +57,25 @@ var loader = new THREE.OBJLoader();
 
 // carregando o sapo
 loader.load(
-			// resource URL
-			'models/frog.obj',
-			// Function when resource is loaded
-			function ( object ) {
-				object.scale.set(0.01, 0.01, 0.01);
-				object.traverse( function ( child )
-				{
-					 if ( child instanceof THREE.Mesh ){
-							 child.material.color.setRGB (0.24, 0.56, 0.25);
-							 child.castShadow = true;
-							 child.receiveShadow = true;
-					 }
-				});
-				frog = object;
-				scene.add(frog);
+	'models/frog.obj',
+
+	function ( object ) {
+		object.scale.set(0.01, 0.01, 0.01);
+		object.traverse( function ( child )
+		{
+			if ( child instanceof THREE.Mesh ){
+				child.material.color.setRGB (0.24, 0.56, 0.25);
+				child.castShadow = true;
+				child.receiveShadow = true;
 			}
-		);
-
-
-//Colocando controles
-//var controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-
-
-
+		});
+		frog = object;
+		scene.add(frog);
+	}
+);
 
 ////////////////////////////////////////////////////
-//Variáveis do jogo e pontuação (implementar)
+
 var dead = true;
 var score = 0;
 
@@ -168,15 +155,15 @@ function keyUp(e) {
 			break;
 
 			case PRESSONE:
-				camera.zoom = 1;
-				camera.position.y = 8.5;
-				camera.updateProjectionMatrix();
+			camera.zoom = 1;
+			camera.position.y = 8.5;
+			camera.updateProjectionMatrix();
 			break;
 
 			case PRESSTWO:
-				camera.zoom = 1.5
-				camera.position.y = 5.5;
-				camera.updateProjectionMatrix();
+			camera.zoom = 1.5
+			camera.position.y = 5.5;
+			camera.updateProjectionMatrix();
 			break;
 
 			case PRESSL:
@@ -200,6 +187,7 @@ function keyUp(e) {
 		if (e.keyCode == PRESSP){
 			if(dead == true){
 				dead = false;
+				resetDiv.style.visibility = "hidden";
 				pauseDiv.style.visibility = "hidden";
 				controls.reset();
 				controls.enabled = false;
@@ -233,7 +221,7 @@ var cCollide = heroWidth / 2 + carWidth / 2 - .1;
 var lCollide = (heroWidth / 4 + logWidth / 4) + .5;
 
 ////////////////////////////////////////////////////////////////////////////
-//obstáculos
+//Obstáculos
 
 heroGeo = new THREE.BoxGeometry(heroWidth, .69, heroWidth);
 var heroTexture =  new THREE.TextureLoader().load('texturas/cube.png');
@@ -656,6 +644,10 @@ function carCollision() {
 			renderer.render(scene, camera);
 		}
 
+
+		///////////////////////////////////////////////////
+
+		//Controles de movimentação da câmera
 		var controls = new THREE.OrbitControls( camera, renderer.domElement );
 		controls.maxPolarAngle = Math.PI * 0.5;
 		controls.minDistance = 10;
@@ -665,14 +657,33 @@ function carCollision() {
 
 
 		//controls = new THREE.MapControls( camera, renderer.domElement );
-				//controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
-				//controls.enableDamping = true;
-				//controls.dampingFactor = 0.25;
-				//controls.screenSpacePanning = false;
-				//controls.minDistance = 10;
-				//controls.maxDistance = 50;
-				//controls.maxPolarAngle = Math.PI / 2;
-				//controls.enabled = false;
+		//controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+		//controls.enableDamping = true;
+		//controls.dampingFactor = 0.25;
+		//controls.screenSpacePanning = false;
+		//controls.minDistance = 10;
+		//controls.maxDistance = 50;
+		//controls.maxPolarAngle = Math.PI / 2;
+		//controls.enabled = false;
+
+		/////////////////////////////////////////////////////
+		//Músicas e sons do jogo
+
+		// create an AudioListener and add it to the camera
+		var listener = new THREE.AudioListener();
+		camera.add( listener );
+
+		// create a global audio source
+		var sound = new THREE.Audio( listener );
+
+		// load a sound and set it as the Audio object's buffer
+		var audioLoader = new THREE.AudioLoader();
+		audioLoader.load( 'sounds/ES_That_is_Fine.mp3', function( buffer ) {
+			sound.setBuffer( buffer );
+			sound.setLoop( true );
+			sound.setVolume( 0.1 );
+			sound.play();
+		});
 
 
 		init();
