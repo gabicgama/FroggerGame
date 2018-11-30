@@ -1,7 +1,6 @@
 //Preparando uso do THREE
 width = window.innerWidth / 16;
 height = window.innerHeight / 16;
-var addMov = .033;
 
 var div = document.querySelector("#game");
 var infoDiv = document.querySelector("#info");
@@ -11,25 +10,21 @@ var scene = new THREE.Scene();
 //Camera 1
 var camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 8.5, -7);
-var b = new THREE.Vector3(0, 0, 0)
-var a = new THREE.Vector3(0, 0, 1);
-camera.lookAt(b);
+var a = new THREE.Vector3(0, 0, 0)
+//var b = new THREE.Vector3(0, 0, 1);
+camera.lookAt(a);
+var addMov = .033;
 
-
-//Camera 2
-//var camera2 = new THREE.OrthographicCamera(-width, width, height, -height, -30, 30);
-//camera2.position.set(-1, 1.8, -3.9);
-//
+//render
 var renderer = new THREE.WebGLRenderer({
 	alpha: true,
-	antialias: true //false deixa mais rapido
+	antialias: false //false deixa mais rapido
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
 div.appendChild(renderer.domElement);
 camera.updateProjectionMatrix();
 
 
-// resize janela
 window.addEventListener('resize', onWindowResize, false);
 
 function onWindowResize() {
@@ -61,7 +56,7 @@ var light3 = new THREE.AmbientLight(0xF6F627, 0.5);
 
 
 //Objeto 3D
-var sapo;
+var frog;
 var loader = new THREE.OBJLoader();
 
 // carregando o sapo
@@ -71,9 +66,6 @@ loader.load(
 			// Function when resource is loaded
 			function ( object ) {
 				object.scale.set(0.01, 0.01, 0.01);
-				//object.position.set(0, 0, -10);
-				//object.rotation.x = Math.PI/2;
-				//object.rotation.y = Math.PI;
 				object.traverse( function ( child )
 				{
 					 if ( child instanceof THREE.Mesh ){
@@ -82,15 +74,17 @@ loader.load(
 							 child.receiveShadow = true;
 					 }
 				});
-				sapo = object;
-				scene.add(sapo);
+				frog = object;
+				scene.add(frog);
 			}
 		);
 
 
 //Colocando controles
 //var controls = new THREE.OrbitControls(camera, renderer.domElement);
-//controls.enabled = false;
+
+
+
 
 
 ////////////////////////////////////////////////////
@@ -111,10 +105,9 @@ function newScore() {
 	pauseDiv.style.visibility = "hidden";
 	resetDiv.style.visibility = "hidden";
 	dead = false;
-
 	init();
 }
-//
+
 /////////////////////////////////////////////////////
 
 //Lista de keycodes
@@ -170,6 +163,7 @@ function keyUp(e) {
 			if(dead == false){
 				dead = true;
 				pauseDiv.style.visibility = "visible";
+				controls.enabled = true;
 			}
 			break;
 
@@ -177,7 +171,6 @@ function keyUp(e) {
 				camera.zoom = 1;
 				camera.position.y = 8.5;
 				camera.updateProjectionMatrix();
-				addMov = .033;
 			break;
 
 			case PRESSTWO:
@@ -208,14 +201,17 @@ function keyUp(e) {
 			if(dead == true){
 				dead = false;
 				pauseDiv.style.visibility = "hidden";
+				controls.reset();
+				controls.enabled = false;
 			}
 		}
 
 	}
-	sapo.position.set(hero.position.x, hero.position.y, hero.position.z);
+	frog.position.set(hero.position.x, hero.position.y, hero.position.z);
 }
 
 /////////////////////////////////////////////////////////////////////////////
+
 //Variáveis do ambiente
 var grass = [], grassCount = 0;
 var water = [], waterCount = 0;
@@ -255,11 +251,11 @@ var roadTexture =  new THREE.TextureLoader().load('texturas/road.jpg');
 roadMat = new THREE.MeshPhongMaterial({ map: roadTexture });
 
 shadeGeo = new THREE.PlaneGeometry(6, 500);
-//shadeMat = new THREE.MeshBasicMaterial({
-//	color: 0x000000,
-//	transparent: true,
-//	opacity: .5
-//});
+shadeMat = new THREE.MeshPhongMaterial({
+	color: 0x000000,
+	transparent: true,
+	opacity: .5
+});
 blindMat = new THREE.MeshPhongMaterial({
 	color: 0xffffff
 });
@@ -279,11 +275,10 @@ logMat = new THREE.MeshPhongMaterial({ map: logTexture });
 // Mesh
 hero = new THREE.Mesh(heroGeo, heroMat);
 hero.position.y = .25;
-//sapo.position.y = .25;
 //scene.add(hero);
 
-//leftShade = new THREE.Mesh(shadeGeo, shadeMat);
-//rightShade = new THREE.Mesh(shadeGeo, shadeMat);
+leftShade = new THREE.Mesh(shadeGeo, shadeMat);
+rightShade = new THREE.Mesh(shadeGeo, shadeMat);
 leftBlind = new THREE.Mesh(shadeGeo, blindMat);
 rightBlind = new THREE.Mesh(shadeGeo, blindMat);
 
@@ -296,16 +291,16 @@ cars[0] = new THREE.Mesh(carGeo, carMat);
 logs[0] = new THREE.Mesh(logGeo, logMat);
 
 //orientação
-//leftShade.rotation.x = 270 * Math.PI / 180;
-//leftShade.position.set(6.65, 1, 248.47);
-//rightShade.rotation.x = 270 * Math.PI / 180;
-//rightShade.position.set(-7.35, 1, 248.47);
+leftShade.rotation.x = 270 * Math.PI / 180;
+leftShade.position.set(6.65, 1, 248.47);
+rightShade.rotation.x = 270 * Math.PI / 180;
+rightShade.position.set(-7.35, 1, 248.47);
 leftBlind.rotation.x = 270 * Math.PI / 180;
 leftBlind.position.set(11.8, .6, 248.9);
 rightBlind.rotation.x = 270 * Math.PI / 180;
 rightBlind.position.set(-12.2, .6, 248.9);
-//scene.add(leftShade);
-//scene.add(rightShade);
+scene.add(leftShade);
+scene.add(rightShade);
 scene.add(leftBlind);
 scene.add(rightBlind);
 
@@ -568,7 +563,7 @@ function carCollision() {
 					hero.scale.y = 0;
 					//sapo.scale.y = 0;
 					hero.position.y = .1;
-					sapo.position.y = .1;
+					frog.position.y = .1;
 					gameOver();
 				}
 			}
@@ -583,10 +578,10 @@ function carCollision() {
 						onLog = true;
 						if (hero.position.x > logs[l].position.x) {
 							hero.position.x = logs[l].position.x + .5;
-							sapo.position.x = logs[l].position.x + .5;
+							frog.position.x = logs[l].position.x + .5;
 						} else {
 							hero.position.x = logs[l].position.x - .5;
-							sapo.position.x = logs[l].position.x - .5;
+							frog.position.x = logs[l].position.x - .5;
 						}
 						if (hero.position.x > 5 || hero.position.x < -5) {
 							gameOver();
@@ -605,11 +600,11 @@ function carCollision() {
 						y = Math.sin( sineCount ) * .08-.2;
 						sineCount += sineInc;
 						hero.position.y = y;
-						sapo.position.y = y;
+						frog.position.y = y;
 						for (w = 0; w < logSpeed.length; w++) {
 							if (hero.position.z == logs[w].position.z) {
 								hero.position.x += logSpeed[w] / 3;
-								sapo.position.x += logSpeed[w] / 3;
+								frog.position.x += logSpeed[w] / 3;
 							}
 						}
 					}
@@ -660,6 +655,25 @@ function carCollision() {
 			scoreDiv.innerHTML = score;
 			renderer.render(scene, camera);
 		}
+
+		var controls = new THREE.OrbitControls( camera, renderer.domElement );
+		controls.maxPolarAngle = Math.PI * 0.5;
+		controls.minDistance = 10;
+		controls.maxDistance = 50;
+		controls.keyPanSpeed = 20.0;
+		controls.enabled = false;
+
+
+		//controls = new THREE.MapControls( camera, renderer.domElement );
+				//controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
+				//controls.enableDamping = true;
+				//controls.dampingFactor = 0.25;
+				//controls.screenSpacePanning = false;
+				//controls.minDistance = 10;
+				//controls.maxDistance = 50;
+				//controls.maxPolarAngle = Math.PI / 2;
+				//controls.enabled = false;
+
 
 		init();
 		render();
