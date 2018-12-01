@@ -15,7 +15,7 @@ var addMov = .033;
 
 var renderer = new THREE.WebGLRenderer({
 	alpha: true,
-	antialias: false //false deixa mais rapido
+	antialias: true //false deixa mais rapido
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
 div.appendChild(renderer.domElement);
